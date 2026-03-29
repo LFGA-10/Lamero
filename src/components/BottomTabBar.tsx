@@ -11,6 +11,7 @@ const tabs: { id: TabId; label: string; icon: typeof Home }[] = [
   { id: "activities", label: "Activities", icon: Activity },
   { id: "advice", label: "Advice", icon: Lightbulb },
   { id: "explore", label: "Explore", icon: Compass },
+  { id: "communities", label: "Community", icon: Users },
   { id: "profile", label: "Profile", icon: User },
   { id: "settings", label: "Settings", icon: Settings },
 ];

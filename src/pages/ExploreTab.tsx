@@ -1,34 +1,128 @@
-import { BookOpen, Users, Podcast, Video, Globe, Sparkles } from "lucide-react";
+import { BookOpen, Feather, PenLine, Palette, Music, Quote } from "lucide-react";
+import { useState } from "react";
 
-const resources = [
-  { icon: BookOpen, title: "Articles & Guides", desc: "In-depth reads on mental wellness", color: "bg-calm" },
-  { icon: Users, title: "Community", desc: "Connect with others on the same path", color: "bg-serene" },
-  { icon: Podcast, title: "Podcasts", desc: "Listen to mental health conversations", color: "bg-warm" },
-  { icon: Video, title: "Video Sessions", desc: "Watch therapeutic content", color: "bg-gentle" },
-  { icon: Globe, title: "Crisis Resources", desc: "Immediate help when you need it", color: "bg-destructive/20" },
-  { icon: Sparkles, title: "Wellness Challenges", desc: "7-day programs to build habits", color: "bg-calm" },
+type Category = "all" | "poems" | "stories" | "reflections";
+
+const writings = [
+  {
+    category: "poems" as const,
+    icon: Feather,
+    title: "The Quiet After",
+    author: "Anonymous",
+    excerpt: "In the stillness between breaths,\nI found a place where worry rests.\nNot gone — just sleeping, soft and slow,\nA garden where calm flowers grow.",
+    color: "bg-serene/40",
+  },
+  {
+    category: "stories" as const,
+    icon: BookOpen,
+    title: "The Lighthouse Keeper",
+    author: "Maya Lin",
+    excerpt: "She hadn't spoken to anyone in three weeks. Not out of sadness, but because the silence had become a friend — the kind that sits beside you without needing to fill the space...",
+    color: "bg-calm/40",
+  },
+  {
+    category: "poems" as const,
+    icon: Feather,
+    title: "Unraveling",
+    author: "J. Rivers",
+    excerpt: "I am not broken,\njust bent toward the light.\nEvery crack, a window;\nevery scar, a story\nwhispered to the night.",
+    color: "bg-warm/40",
+  },
+  {
+    category: "reflections" as const,
+    icon: PenLine,
+    title: "Letter to My Younger Self",
+    author: "Community Member",
+    excerpt: "You will learn that strength is not the absence of tears but the courage to let them fall. The walls you're building now — you'll tear them down one day, and it will be the bravest thing you ever do.",
+    color: "bg-gentle/40",
+  },
+  {
+    category: "stories" as const,
+    icon: BookOpen,
+    title: "The Empty Chair",
+    author: "Dr. Sarah Cole",
+    excerpt: "Every Tuesday at 3pm, the old man brought two cups of tea to the park bench. One for himself, one for the empty chair beside him. 'Grief doesn't mean forgetting,' he told me once...",
+    color: "bg-serene/40",
+  },
+  {
+    category: "reflections" as const,
+    icon: Quote,
+    title: "On Healing",
+    author: "Rumi (adapted)",
+    excerpt: "The wound is the place where the Light enters you. Don't turn away. Keep your gaze on the bandaged place. That's where the light enters you.",
+    color: "bg-warm/40",
+  },
+  {
+    category: "poems" as const,
+    icon: Feather,
+    title: "Small Victories",
+    author: "K. Patel",
+    excerpt: "Today I opened the curtains.\nTomorrow, maybe the window.\nThe day after — who knows?\nPerhaps the door.",
+    color: "bg-calm/40",
+  },
+  {
+    category: "reflections" as const,
+    icon: Palette,
+    title: "Art as Medicine",
+    author: "Community Member",
+    excerpt: "I couldn't say it in words, so I painted it — dark blues that slowly bled into gold at the edges. My therapist said, 'That's what hope looks like.' I hadn't even known I was painting hope.",
+    color: "bg-gentle/40",
+  },
+];
+
+const categories: { id: Category; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "poems", label: "Poems" },
+  { id: "stories", label: "Stories" },
+  { id: "reflections", label: "Reflections" },
 ];
 
 const ExploreTab = () => {
+  const [active, setActive] = useState<Category>("all");
+  const filtered = active === "all" ? writings : writings.filter((w) => w.category === active);
+
   return (
     <div className="min-h-screen bg-background pb-24 px-5 pt-14 max-w-lg mx-auto">
       <h1 className="font-display text-2xl font-bold text-foreground mb-1">Explore</h1>
-      <p className="text-muted-foreground text-sm mb-6">Discover resources to support you</p>
-      <div className="grid grid-cols-2 gap-3">
-        {resources.map((r, i) => {
-          const Icon = r.icon;
+      <p className="text-muted-foreground text-sm mb-4">Writings that heal the soul</p>
+
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setActive(cat.id)}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+              active === cat.id
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        {filtered.map((w, i) => {
+          const Icon = w.icon;
           return (
             <div
               key={i}
-              className="p-5 rounded-2xl bg-card border border-border flex flex-col items-center text-center gap-3 hover:shadow-md transition-all cursor-pointer animate-fade-in"
+              className={`p-5 rounded-2xl ${w.color} border border-border hover:shadow-md transition-all cursor-pointer animate-fade-in`}
               style={{ animationDelay: `${i * 0.08}s` }}
             >
-              <div className={`p-3 rounded-xl ${r.color}`}>
-                <Icon size={24} className="text-foreground" />
+              <div className="flex items-center gap-2 mb-3">
+                <Icon size={16} className="text-primary" />
+                <span className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground">
+                  {w.category}
+                </span>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground text-sm">{r.title}</h3>
-                <p className="text-muted-foreground text-xs mt-1">{r.desc}</p>
+              <h3 className="font-display font-semibold text-foreground text-base mb-1">{w.title}</h3>
+              <p className="text-muted-foreground text-xs mb-3 italic">by {w.author}</p>
+              <p className="text-foreground/80 text-sm leading-relaxed whitespace-pre-line">{w.excerpt}</p>
+              <div className="flex items-center gap-3 mt-4">
+                <button className="text-xs text-primary font-medium hover:underline">Read more</button>
+                <button className="text-xs text-muted-foreground hover:text-foreground">♡ Save</button>
               </div>
             </div>
           );
