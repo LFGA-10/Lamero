@@ -13,7 +13,7 @@ const MoodChecker = () => {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <div className="glass rounded-2xl p-6 animate-fade-in">
+    <div className="glass rounded-2xl p-6 animate-fade-in bg-calm/40">
       <h2 className="font-display text-xl font-semibold text-primary-foreground mb-1">
         How are you feeling?
       </h2>
