@@ -1,16 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import BottomTabBar from "@/components/BottomTabBar";
+import HomeTab from "@/pages/HomeTab";
+import ActivitiesTab from "@/pages/ActivitiesTab";
+import AdviceTab from "@/pages/AdviceTab";
+import ExploreTab from "@/pages/ExploreTab";
+import ProfileTab from "@/pages/ProfileTab";
+import SettingsTab from "@/pages/SettingsTab";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+type TabId = "home" | "activities" | "advice" | "explore" | "profile" | "settings";
+
+const tabs: Record<TabId, React.ComponentType> = {
+  home: HomeTab,
+  activities: ActivitiesTab,
+  advice: AdviceTab,
+  explore: ExploreTab,
+  profile: ProfileTab,
+  settings: SettingsTab,
+};
+
+const Index = () => {
+  const [activeTab, setActiveTab] = useState<TabId>("home");
+  const ActiveComponent = tabs[activeTab];
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen">
+      <ActiveComponent />
+      <BottomTabBar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
