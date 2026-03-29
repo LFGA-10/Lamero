@@ -30,7 +30,7 @@ const QuoteCard = () => {
   const quote = quotes[index];
 
   return (
-    <div className="glass rounded-2xl p-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+    <div className="glass rounded-2xl p-6 animate-fade-in bg-serene/40" style={{ animationDelay: "0.2s" }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-display text-lg font-semibold text-primary-foreground">
           Daily Inspiration
