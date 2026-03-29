@@ -30,23 +30,23 @@ const QuoteCard = () => {
   const quote = quotes[index];
 
   return (
-    <div className="glass rounded-2xl p-6 animate-fade-in bg-serene/40" style={{ animationDelay: "0.2s" }}>
+    <div className="rounded-2xl p-6 animate-fade-in bg-brown border border-brown/20" style={{ animationDelay: "0.2s" }}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display text-lg font-semibold text-primary-foreground">
+        <h3 className="font-display text-lg font-semibold text-brown-foreground">
           Daily Inspiration
         </h3>
         <button
           onClick={nextQuote}
-          className="p-2 rounded-full bg-card/40 hover:bg-card/60 transition-colors text-primary-foreground/70 hover:text-primary-foreground"
+          className="p-2 rounded-full bg-brown-foreground/10 hover:bg-brown-foreground/20 transition-colors text-brown-foreground/70 hover:text-brown-foreground"
         >
           <RefreshCw size={16} />
         </button>
       </div>
       <div key={fadeKey} className="animate-fade-in">
-        <p className="text-primary-foreground/90 text-base italic leading-relaxed font-body">
+        <p className="text-brown-foreground/90 text-base italic leading-relaxed font-body">
           "{quote.text}"
         </p>
-        <p className="text-primary-foreground/60 text-sm mt-3 font-medium">
+        <p className="text-brown-foreground/60 text-sm mt-3 font-medium">
           — {quote.author}
         </p>
       </div>

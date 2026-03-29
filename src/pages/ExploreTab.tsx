@@ -1,7 +1,8 @@
-import { BookOpen, Feather, PenLine, Palette, Music, Quote } from "lucide-react";
+import { BookOpen, Feather, PenLine, Palette, Music, Quote, Image } from "lucide-react";
 import { useState } from "react";
+import DynamicBackground from "@/components/DynamicBackground";
 
-type Category = "all" | "poems" | "stories" | "reflections";
+type Category = "all" | "poems" | "stories" | "reflections" | "art";
 
 const writings = [
   {
@@ -10,7 +11,6 @@ const writings = [
     title: "The Quiet After",
     author: "Anonymous",
     excerpt: "In the stillness between breaths,\nI found a place where worry rests.\nNot gone — just sleeping, soft and slow,\nA garden where calm flowers grow.",
-    color: "bg-serene/40",
   },
   {
     category: "stories" as const,
@@ -18,7 +18,6 @@ const writings = [
     title: "The Lighthouse Keeper",
     author: "Maya Lin",
     excerpt: "She hadn't spoken to anyone in three weeks. Not out of sadness, but because the silence had become a friend — the kind that sits beside you without needing to fill the space...",
-    color: "bg-calm/40",
   },
   {
     category: "poems" as const,
@@ -26,7 +25,6 @@ const writings = [
     title: "Unraveling",
     author: "J. Rivers",
     excerpt: "I am not broken,\njust bent toward the light.\nEvery crack, a window;\nevery scar, a story\nwhispered to the night.",
-    color: "bg-warm/40",
   },
   {
     category: "reflections" as const,
@@ -34,7 +32,13 @@ const writings = [
     title: "Letter to My Younger Self",
     author: "Community Member",
     excerpt: "You will learn that strength is not the absence of tears but the courage to let them fall. The walls you're building now — you'll tear them down one day, and it will be the bravest thing you ever do.",
-    color: "bg-gentle/40",
+  },
+  {
+    category: "art" as const,
+    icon: Image,
+    title: "Healing Hands",
+    author: "Elena Torres",
+    excerpt: "A watercolor painting of two hands releasing a flock of golden birds into a twilight sky — symbolizing letting go of pain and embracing freedom.",
   },
   {
     category: "stories" as const,
@@ -42,7 +46,6 @@ const writings = [
     title: "The Empty Chair",
     author: "Dr. Sarah Cole",
     excerpt: "Every Tuesday at 3pm, the old man brought two cups of tea to the park bench. One for himself, one for the empty chair beside him. 'Grief doesn't mean forgetting,' he told me once...",
-    color: "bg-serene/40",
   },
   {
     category: "reflections" as const,
@@ -50,7 +53,13 @@ const writings = [
     title: "On Healing",
     author: "Rumi (adapted)",
     excerpt: "The wound is the place where the Light enters you. Don't turn away. Keep your gaze on the bandaged place. That's where the light enters you.",
-    color: "bg-warm/40",
+  },
+  {
+    category: "art" as const,
+    icon: Palette,
+    title: "The Weight We Carry",
+    author: "Marcus Hale",
+    excerpt: "An ink drawing of a figure walking uphill, their shadow shaped like heavy chains — yet flowers bloom from each footprint left behind.",
   },
   {
     category: "poems" as const,
@@ -58,7 +67,13 @@ const writings = [
     title: "Small Victories",
     author: "K. Patel",
     excerpt: "Today I opened the curtains.\nTomorrow, maybe the window.\nThe day after — who knows?\nPerhaps the door.",
-    color: "bg-calm/40",
+  },
+  {
+    category: "art" as const,
+    icon: Image,
+    title: "Inner Garden",
+    author: "Yuki Tanaka",
+    excerpt: "A mixed-media collage of a human silhouette filled with blooming wildflowers, roots intertwining with veins — representing growth from within.",
   },
   {
     category: "reflections" as const,
@@ -66,7 +81,13 @@ const writings = [
     title: "Art as Medicine",
     author: "Community Member",
     excerpt: "I couldn't say it in words, so I painted it — dark blues that slowly bled into gold at the edges. My therapist said, 'That's what hope looks like.' I hadn't even known I was painting hope.",
-    color: "bg-gentle/40",
+  },
+  {
+    category: "art" as const,
+    icon: Palette,
+    title: "Breaking Through",
+    author: "Amara Osei",
+    excerpt: "A charcoal sketch of a face half-covered by cracking porcelain — underneath, warm light glows through the fractures, suggesting beauty in imperfection.",
   },
 ];
 
@@ -75,6 +96,7 @@ const categories: { id: Category; label: string }[] = [
   { id: "poems", label: "Poems" },
   { id: "stories", label: "Stories" },
   { id: "reflections", label: "Reflections" },
+  { id: "art", label: "Paintings & Drawings" },
 ];
 
 const ExploreTab = () => {
@@ -82,51 +104,54 @@ const ExploreTab = () => {
   const filtered = active === "all" ? writings : writings.filter((w) => w.category === active);
 
   return (
-    <div className="min-h-screen bg-background pb-24 px-5 pt-14 max-w-lg mx-auto">
-      <h1 className="font-display text-2xl font-bold text-foreground mb-1">Explore</h1>
-      <p className="text-muted-foreground text-sm mb-4">Writings that heal the soul</p>
+    <div className="relative min-h-screen pb-24">
+      <DynamicBackground />
+      <div className="relative z-10 px-5 pt-14 max-w-lg mx-auto">
+        <h1 className="font-display text-2xl font-bold text-primary-foreground mb-1">Explore</h1>
+        <p className="text-primary-foreground/70 text-sm mb-4">Writings & art that heal the soul</p>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActive(cat.id)}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
-              active === cat.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="space-y-4">
-        {filtered.map((w, i) => {
-          const Icon = w.icon;
-          return (
-            <div
-              key={i}
-              className={`p-5 rounded-2xl ${w.color} border border-border hover:shadow-md transition-all cursor-pointer animate-fade-in`}
-              style={{ animationDelay: `${i * 0.08}s` }}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActive(cat.id)}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+                active === cat.id
+                  ? "bg-brown text-brown-foreground"
+                  : "bg-brown/30 text-primary-foreground/80 hover:bg-brown/50"
+              }`}
             >
-              <div className="flex items-center gap-2 mb-3">
-                <Icon size={16} className="text-primary" />
-                <span className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground">
-                  {w.category}
-                </span>
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          {filtered.map((w, i) => {
+            const Icon = w.icon;
+            return (
+              <div
+                key={i}
+                className="p-5 rounded-2xl bg-brown border border-brown/20 hover:shadow-md transition-all cursor-pointer animate-fade-in"
+                style={{ animationDelay: `${i * 0.08}s` }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon size={16} className="text-brown-foreground/80" />
+                  <span className="text-[10px] uppercase tracking-wider font-medium text-brown-foreground/60">
+                    {w.category}
+                  </span>
+                </div>
+                <h3 className="font-display font-semibold text-brown-foreground text-base mb-1">{w.title}</h3>
+                <p className="text-brown-foreground/70 text-xs mb-3 italic">by {w.author}</p>
+                <p className="text-brown-foreground/90 text-sm leading-relaxed whitespace-pre-line">{w.excerpt}</p>
+                <div className="flex items-center gap-3 mt-4">
+                  <button className="text-xs text-brown-foreground font-medium hover:underline">Read more</button>
+                  <button className="text-xs text-brown-foreground/60 hover:text-brown-foreground">♡ Save</button>
+                </div>
               </div>
-              <h3 className="font-display font-semibold text-foreground text-base mb-1">{w.title}</h3>
-              <p className="text-muted-foreground text-xs mb-3 italic">by {w.author}</p>
-              <p className="text-foreground/80 text-sm leading-relaxed whitespace-pre-line">{w.excerpt}</p>
-              <div className="flex items-center gap-3 mt-4">
-                <button className="text-xs text-primary font-medium hover:underline">Read more</button>
-                <button className="text-xs text-muted-foreground hover:text-foreground">♡ Save</button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
