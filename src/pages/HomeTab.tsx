@@ -33,13 +33,13 @@ const HomeTab = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-          <div className="glass rounded-2xl p-5 flex flex-col items-center gap-2 hover:scale-105 transition-transform cursor-pointer bg-warm/40">
+          <div className="rounded-2xl p-5 flex flex-col items-center gap-2 hover:scale-105 transition-transform cursor-pointer bg-brown border border-brown/20">
             <span className="text-2xl">🧘</span>
-            <span className="text-sm font-medium text-primary-foreground">Breathe</span>
+            <span className="text-sm font-medium text-brown-foreground">Breathe</span>
           </div>
-          <div className="glass rounded-2xl p-5 flex flex-col items-center gap-2 hover:scale-105 transition-transform cursor-pointer bg-gentle/40">
+          <div className="rounded-2xl p-5 flex flex-col items-center gap-2 hover:scale-105 transition-transform cursor-pointer bg-brown border border-brown/20">
             <span className="text-2xl">📝</span>
-            <span className="text-sm font-medium text-primary-foreground">Journal</span>
+            <span className="text-sm font-medium text-brown-foreground">Journal</span>
           </div>
         </div>
       </div>
