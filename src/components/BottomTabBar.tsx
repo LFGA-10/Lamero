@@ -1,7 +1,6 @@
-import { Home, Activity, Lightbulb, Compass, User, Settings } from "lucide-react";
+import { Home, Activity, Lightbulb, Compass, Users, User, Settings } from "lucide-react";
 
-type TabId = "home" | "activities" | "advice" | "explore" | "profile" | "settings";
-
+type TabId = "home" | "activities" | "advice" | "explore" | "communities" | "profile" | "settings";
 interface BottomTabBarProps {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
