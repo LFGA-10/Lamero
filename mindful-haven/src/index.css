@@ -45,8 +45,15 @@
     --gentle: 152 25% 90%;
     --gentle-foreground: 152 35% 30%;
 
-    --brown: 260 40% 65%;
-    --brown-foreground: 0 0% 100%;
+    --brand-tan: 34 35% 65%; /* #d4a373 */
+    --brand-tan-foreground: 0 0% 100%;
+    --brand-soft: 30 100% 98%; /* #fff9f2 */
+    --brand-text: 16 20% 47%; /* #8d6e63 */
+    --brand-text-dark: 14 25% 30%; /* #5d4037 */
+
+    /* Keep compatibility with existing components */
+    --brown: var(--brand-tan);
+    --brown-foreground: var(--brand-tan-foreground);
 
     --glass: 0 0% 100% / 0.7;
     --glass-border: 0 0% 100% / 0.3;
@@ -63,6 +70,38 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --background: 220 25% 10%;
+    --foreground: 40 15% 98%;
+
+    --card: 220 25% 12%;
+    --card-foreground: 40 15% 98%;
+
+    --popover: 220 25% 10%;
+    --popover-foreground: 40 15% 98%;
+
+    --primary: 152 35% 55%;
+    --primary-foreground: 220 25% 10%;
+
+    --secondary: 270 20% 20%;
+    --secondary-foreground: 270 30% 90%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 30 50% 20%;
+    --accent-foreground: 30 40% 90%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 152 35% 55%;
+
+    --glass: 220 25% 10% / 0.7;
+    --glass-border: 220 20% 20% / 0.3;
   }
 }
 

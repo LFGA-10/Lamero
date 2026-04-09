@@ -12,7 +12,7 @@ const DynamicBackground = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % backgrounds.length);
-    }, 8000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -28,7 +28,7 @@ const DynamicBackground = () => {
           }}
         />
       ))}
-      <div className="absolute inset-0" style={{ background: "hsl(var(--overlay))" }} />
+      <div className="absolute inset-0 bg-background/40 dark:bg-overlay" />
     </div>
   );
 };

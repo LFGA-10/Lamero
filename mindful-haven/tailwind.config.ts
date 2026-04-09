@@ -71,6 +71,12 @@ export default {
           DEFAULT: "hsl(var(--brown))",
           foreground: "hsl(var(--brown-foreground))",
         },
+        brand: {
+          tan: "hsl(var(--brand-tan))",
+          soft: "hsl(var(--brand-soft))",
+          text: "hsl(var(--brand-text))",
+          "text-dark": "hsl(var(--brand-text-dark))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
