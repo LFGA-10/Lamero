@@ -2,6 +2,8 @@ import { User, Bell, Shield, Lock, Moon, LogOut, ChevronRight, Heart, Globe, Set
 import DynamicBackground from "@/components/DynamicBackground";
 import { useLanguage } from "@/context/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import TwoFactorSetup from "@/components/TwoFactorSetup";
 
 const SettingsTab = () => {
   const { t, language } = useLanguage();
@@ -38,6 +40,21 @@ const SettingsTab = () => {
 
           <Section title={t('safety_privacy')}>
             <SettingItem icon={Shield} label={t('trusted_guardian')} subLabel={t('active_protection')} />
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="w-full">
+                  <SettingItem icon={Lock} label="Two-Factor Auth" subLabel="Enhanced Security" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md rounded-[3rem] border-none glass-strong shadow-2xl p-8">
+                <DialogHeader>
+                  <DialogTitle className="hidden">2FA Setup</DialogTitle>
+                </DialogHeader>
+                <TwoFactorSetup />
+              </DialogContent>
+            </Dialog>
+
             <SettingItem icon={Lock} label={t('privacy_controls')} />
           </Section>
 

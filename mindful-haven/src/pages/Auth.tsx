@@ -16,6 +16,9 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
+  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const [userIdFor2FA, setUserIdFor2FA] = useState<string | null>(null);
 
   const { t, setUserName } = useLanguage();
   const { login } = useAuth();
@@ -40,8 +43,9 @@ const Auth = () => {
       });
 
       if (data.twoFactorRequired) {
+        setShow2FA(true);
+        setUserIdFor2FA(data.userId);
         toast.info("2FA synchronization required");
-        // Handle 2FA flow if needed
         return;
       }
 
@@ -51,6 +55,25 @@ const Auth = () => {
       navigate("/welcome");
     } catch (err: any) {
       toast.error(err.message || "Failed to resonate with sanctuary server");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    if (!twoFactorToken) return;
+    setLoading(true);
+    try {
+      const data = await apiRequest("/auth/login-2fa", {
+        method: "POST",
+        body: JSON.stringify({ userId: userIdFor2FA, token: twoFactorToken })
+      });
+      login(data, data.token);
+      setUserName(data.username);
+      toast.success("Identity verified. Welcome back.");
+      navigate("/welcome");
+    } catch (err: any) {
+      toast.error(err.message || "Invalid resonance code");
     } finally {
       setLoading(false);
     }
@@ -75,76 +98,111 @@ const Auth = () => {
         </div>
 
         <Card className="p-8 rounded-[3rem] glass-strong border-white/20 shadow-2xl space-y-8 relative overflow-hidden group">
-          <div className="flex gap-4 border-b border-brand-tan/10 pb-6">
-            <button
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 text-xs font-black uppercase tracking-widest transition-all ${
-                isLogin ? "text-brand-tan border-b-2 border-brand-tan pb-2" : "text-brand-text/30"
-              }`}
-            >
-              {t('sign_in')}
-            </button>
-            <button
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 text-xs font-black uppercase tracking-widest transition-all ${
-                !isLogin ? "text-brand-tan border-b-2 border-brand-tan pb-2" : "text-brand-text/30"
-              }`}
-            >
-              {t('sign_up')}
-            </button>
-          </div>
+          {show2FA ? (
+            <div className="space-y-6 animate-in slide-in-from-right-8 duration-500">
+               <div className="text-center space-y-2">
+                  <div className="p-4 bg-brand-tan/10 rounded-full text-brand-tan inline-block mx-auto mb-2">
+                     <Shield size={32} />
+                  </div>
+                  <h3 className="text-lg font-bold text-brand-text-dark uppercase tracking-tight italic">Verify Identity</h3>
+                  <p className="text-[10px] font-bold text-brand-text/30 uppercase tracking-[0.2em]">Enter resonance code from your app</p>
+               </div>
 
-          <div className="space-y-4">
-            {!isLogin && (
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
-                <Input
-                  type="text"
-                  placeholder={t('user_placeholder')}
-                  value={username}
-                  onChange={(e) => setUsernameInput(e.target.value)}
-                  className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
-                />
+               <div className="space-y-4">
+                  <Input 
+                    type="text"
+                    placeholder="000000"
+                    value={twoFactorToken}
+                    onChange={(e) => setTwoFactorToken(e.target.value)}
+                    className="h-16 bg-white/50 text-center text-2xl font-bold tracking-[0.5em] rounded-3xl border-none ring-1 ring-brand-tan/20"
+                    maxLength={6}
+                  />
+                  <Button
+                    onClick={handleVerify2FA}
+                    disabled={loading}
+                    className="w-full h-16 rounded-[2rem] bg-brand-tan hover:bg-[#ae8159] text-white text-sm font-black uppercase tracking-[0.2em] shadow-lg transition-all duration-500 hover:scale-[1.02] border-none"
+                  >
+                    {loading ? "Verifying..." : "Grant Access"}
+                  </Button>
+                  <button onClick={() => setShow2FA(false)} className="w-full text-[10px] font-black text-brand-text/30 uppercase tracking-[0.4em] pt-2">
+                    Back to Login
+                  </button>
+               </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex gap-4 border-b border-brand-tan/10 pb-6">
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 text-xs font-black uppercase tracking-widest transition-all ${
+                    isLogin ? "text-brand-tan border-b-2 border-brand-tan pb-2" : "text-brand-text/30"
+                  }`}
+                >
+                  {t('sign_in')}
+                </button>
+                <button
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 text-xs font-black uppercase tracking-widest transition-all ${
+                    !isLogin ? "text-brand-tan border-b-2 border-brand-tan pb-2" : "text-brand-text/30"
+                  }`}
+                >
+                  {t('sign_up')}
+                </button>
               </div>
-            )}
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
-              <Input
-                type="email"
-                placeholder={t('email_placeholder')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
-              />
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
-              <Input
-                type="password"
-                placeholder={t('pass_placeholder')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
-              />
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            <Button
-              onClick={handleBegin}
-              disabled={loading}
-              className="w-full h-16 rounded-[2rem] bg-brand-tan hover:bg-[#ae8159] text-white text-sm font-black uppercase tracking-[0.2em] shadow-lg transition-all duration-500 hover:scale-[1.02] border-none disabled:opacity-50"
-            >
-              {loading ? "Synching..." : (isLogin ? t('welcome') : t('begin'))}
-            </Button>
-            {isLogin && (
-              <div className="flex justify-center">
-                 <button className="text-[10px] font-black text-brand-text/30 uppercase tracking-widest hover:text-brand-tan transition-colors">
-                    {t('forgot_pass')}
-                 </button>
+              <div className="space-y-4">
+                {!isLogin && (
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
+                    <Input
+                      type="text"
+                      placeholder={t('user_placeholder')}
+                      value={username}
+                      onChange={(e) => setUsernameInput(e.target.value)}
+                      className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                    />
+                  </div>
+                )}
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
+                  <Input
+                    type="email"
+                    placeholder={t('email_placeholder')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                  />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-tan/40" size={18} />
+                  <Input
+                    type="password"
+                    placeholder={t('pass_placeholder')}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                  />
+                </div>
               </div>
-            )}
-          </div>
+
+              <div className="space-y-4">
+                <Button
+                  onClick={handleBegin}
+                  disabled={loading}
+                  className="w-full h-16 rounded-[2rem] bg-brand-tan hover:bg-[#ae8159] text-white text-sm font-black uppercase tracking-[0.2em] shadow-lg transition-all duration-500 hover:scale-[1.02] border-none disabled:opacity-50"
+                >
+                  {loading ? "Synching..." : (isLogin ? t('welcome') : t('begin'))}
+                </Button>
+                {isLogin && (
+                  <div className="flex justify-center">
+                    <button className="text-[10px] font-black text-brand-text/30 uppercase tracking-widest hover:text-brand-tan transition-colors">
+                        {t('forgot_pass')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </Card>
 
         <div className="text-center">
