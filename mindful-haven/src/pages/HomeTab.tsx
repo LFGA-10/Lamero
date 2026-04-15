@@ -1,164 +1,241 @@
-import { useState, useEffect, useMemo } from "react";
-import DynamicBackground from "@/components/DynamicBackground";
+import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-import { 
-  Play, 
-  ChevronRight, 
-  Library, 
-  Flower2, 
-  MessageCircle, 
-  Music,
-  Heart,
-  Sparkles,
-  CheckCircle2,
-  Tent
-} from "lucide-react";
+import { Heart, Share2, Sparkles, MessageCircle, Bookmark, Copy, Link as LinkIcon, Instagram, Twitter, Send, Check } from "lucide-react";
+import { toast } from "sonner";
+import DynamicBackground from "@/components/DynamicBackground";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-interface ContentSet {
-  quotes: { textKey: string; author: string }[];
-  playlist: { titleKey: string; artist: string; youtube: string; icon: any; color: string; descKey: string };
-  reflection: { titleKey: string; textKey: string; icon: any; color: string };
+interface PinterestQuote {
+  id: number;
+  textKey: string;
+  author: string;
+  img: string;
+  height: string;
 }
 
-const moodContent: Record<string, ContentSet> = {
-  Radiant: {
-    quotes: [{ textKey: "quote_1", author: "Lumora" }, { textKey: "quote_2", author: "Sanctuary" }],
-    playlist: { titleKey: "Radiant Vibes", artist: "Pharrell", youtube: "https://www.youtube.com/results?search_query=happy", icon: Sparkles, color: "bg-yellow-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Flower2, color: "bg-yellow-50" }
-  },
-  Sad: {
-    quotes: [{ textKey: "quote_1", author: "Lumora" }, { textKey: "quote_2", author: "Sanctuary" }],
-    playlist: { titleKey: "Gentle Comfort", artist: "Bon Iver", youtube: "https://www.youtube.com/results?search_query=bon+iver", icon: Heart, color: "bg-indigo-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Heart, color: "bg-indigo-50" }
-  },
-  Anxious: {
-    quotes: [{ textKey: "quote_1", author: "Lumora" }, { textKey: "quote_2", author: "Sanctuary" }],
-    playlist: { titleKey: "Peaceful Stillness", artist: "Nature", youtube: "https://www.youtube.com/results?search_query=calm+nature", icon: Tent, color: "bg-amber-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Sparkles, color: "bg-amber-50" }
-  },
-  Tired: {
-    quotes: [{ textKey: "quote_2", author: "Lumora" }, { textKey: "quote_1", author: "Sanctuary" }],
-    playlist: { titleKey: "Lo-Fi Rest", artist: "Lofi Girl", youtube: "https://www.youtube.com/results?search_query=lofi", icon: Music, color: "bg-blue-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Sparkles, color: "bg-blue-50" }
-  },
-  Peaceful: {
-    quotes: [{ textKey: "quote_1", author: "Lumora" }, { textKey: "quote_2", author: "Sanctuary" }],
-    playlist: { titleKey: "Evening Calm", artist: "Ambient", youtube: "https://www.youtube.com/results?search_query=ambient+peace", icon: Flower2, color: "bg-green-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Flower2, color: "bg-green-50" }
-  },
-  Reflective: {
-    quotes: [{ textKey: "quote_1", author: "Lumora" }, { textKey: "quote_2", author: "Sanctuary" }],
-    playlist: { titleKey: "Soul Search", artist: "Max Richter", youtube: "https://www.youtube.com/results?search_query=max+richter", icon: Library, color: "bg-purple-100", descKey: "playlist_desc" },
-    reflection: { titleKey: "reflection_title", textKey: "reflection_text", icon: Sparkles, color: "bg-purple-50" }
-  }
-};
-
-const defaultContent: ContentSet = moodContent.Anxious;
+const quotes: PinterestQuote[] = [
+  { id: 1, textKey: "quote_1", author: "Marcus Aurelius", img: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=400", height: "h-64" },
+  { id: 2, textKey: "quote_2", author: "Buddha", img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=400", height: "h-80" },
+  { id: 3, textKey: "quote_3", author: "Thich Nhat Hanh", img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=400", height: "h-72" },
+  { id: 4, textKey: "quote_4", author: "Ma Jaya Sati", img: "https://images.unsplash.com/photo-1500624239109-db1957703270?auto=format&fit=crop&q=80&w=400", height: "h-64" },
+  { id: 5, textKey: "quote_5", author: "Lao Tzu", img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=400", height: "h-96" },
+  { id: 6, textKey: "quote_6", author: "Lao Tzu", img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=400", height: "h-72" },
+  { id: 7, textKey: "quote_7", author: "Steve Jobs", img: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&q=80&w=400", height: "h-64" },
+  { id: 8, textKey: "quote_8", author: "Eleanor Roosevelt", img: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&q=80&w=400", height: "h-80" },
+  { id: 9, textKey: "quote_9", author: "Albert Einstein", img: "https://images.unsplash.com/photo-1518173946687-a4c8a98039f5?auto=format&fit=crop&q=80&w=400", height: "h-72" },
+  { id: 10, textKey: "quote_10", author: "Winston Churchill", img: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&q=80&w=400", height: "h-96" },
+];
 
 const HomeTab = () => {
-  const { t, selectedMood } = useLanguage();
-  const [quoteIndex, setQuoteIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const { t } = useLanguage();
+  const [likedIds, setLikedIds] = useState<number[]>([]);
+  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<PinterestQuote | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const content = useMemo(() => {
-    return selectedMood ? (moodContent[selectedMood.label] || defaultContent) : defaultContent;
-  }, [selectedMood]);
+  const toggleLike = (id: number) => {
+    setLikedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    if (!likedIds.includes(id)) toast.success("Quote liked!");
+  };
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setQuoteIndex((prev) => (prev + 1) % content.quotes.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [content]);
+  const toggleSave = (id: number) => {
+    setSavedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    toast.success(savedIds.includes(id) ? "Removed from sanctuary" : "Added to your sanctuary");
+  };
+
+  const openShare = (quote: PinterestQuote) => {
+    setSelectedQuote(quote);
+    setIsShareModalOpen(true);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success("Link copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareInternal = () => {
+    toast.success("Shared with Circles community!");
+    setIsShareModalOpen(false);
+  };
+
+  const shareSocial = (platform: string) => {
+    toast.success(`Opening ${platform}...`);
+    setIsShareModalOpen(false);
+  };
+
+  const savedQuotes = quotes.filter(q => savedIds.includes(q.id));
 
   return (
-    <div className="space-y-8 pb-10 relative">
-      <div className="relative z-10 space-y-8">
-        <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
-          <div className="relative rounded-[2.5rem] overflow-hidden shadow-xl aspect-[16/7] group bg-brand-tan/10">
-            <img 
-              src={`https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&q=80&w=800`} 
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-60"
-            />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center p-8 text-center backdrop-blur-[1px]">
-              <div className="relative w-full overflow-hidden h-32 flex items-center justify-center">
-                {content.quotes.map((q, i) => (
-                  <div 
-                    key={i}
-                    className={`absolute w-full px-4 transition-all duration-700 ease-in-out transform ${
-                      i === quoteIndex ? "translate-x-0 opacity-100" : i < quoteIndex ? "-translate-x-full opacity-0" : "translate-x-full opacity-0"
-                    }`}
-                  >
-                    <p className="text-white text-lg font-display italic font-semibold leading-relaxed drop-shadow-md">
-                      " {t(q.textKey)} "
-                      <span className="block text-sm not-italic mt-2 opacity-80 font-bold tracking-widest uppercase">— {q.author}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <div className="pb-24 pt-4 animate-in fade-in duration-700 relative">
+      <DynamicBackground />
+      
+      <div className="relative z-10">
+        <div className="flex flex-col items-center gap-2 mb-8 text-center px-4">
+          <div className="p-3 bg-brand-soft rounded-3xl text-brand-tan shadow-sm border border-brand-tan/10 mb-2">
+            <Sparkles size={28} />
           </div>
+          <h1 className="text-3xl font-display font-black italic text-brand-text-dark tracking-tight uppercase leading-none">
+            {t('home')}
+          </h1>
+          <p className="text-[10px] font-black text-brand-text/30 uppercase tracking-[0.3em]">
+            Your sanctuary of daily wisdom
+          </p>
         </div>
 
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-          <div className="flex flex-col items-center gap-2 text-center px-4">
-             <div className="p-4 bg-brand-soft rounded-full shadow-sm text-brand-tan">
-                <Music size={32} />
-             </div>
-             <h2 className="text-3xl font-display font-bold italic text-brand-text-dark">{t('playlist')}</h2>
-             <p className="text-brand-text/70 font-medium font-body uppercase tracking-[0.2em] text-[10px]">
-               {t(content.playlist.descKey)} {selectedMood ? ' - ' + t(selectedMood.label) : ''}
-             </p>
-          </div>
-
-          <div className={`${content.playlist.color} rounded-[2.5rem] p-8 space-y-6 shadow-sm border border-brand-tan/5 transition-colors duration-1000`}>
-            <div className="flex gap-6 items-center">
-               <div className="w-20 h-20 bg-white/40 rounded-3xl flex items-center justify-center text-brand-text-dark shadow-inner italic font-bold">
-                  <Music size={32} strokeWidth={1.5} />
-               </div>
-               <div className="space-y-1">
-                  <h3 className="text-2xl font-display font-extrabold text-brand-text-dark leading-tight">{content.playlist.titleKey}</h3>
-                  <p className="text-brand-text/60 font-bold uppercase tracking-widest text-xs">by {content.playlist.artist}</p>
-               </div>
+        {/* Saved Section Slider */}
+        {savedQuotes.length > 0 && (
+          <div className="mb-10 animate-in slide-in-from-right-4 duration-700">
+            <div className="flex items-center justify-between px-6 mb-4">
+              <h2 className="text-xl font-display font-bold italic text-brand-text-dark">Saved Sanctuary</h2>
+              <span className="text-[9px] font-black text-brand-tan uppercase tracking-widest bg-brand-tan/10 px-3 py-1 rounded-full">
+                {savedQuotes.length} Quotes
+              </span>
             </div>
-            <a 
-              href={content.playlist.youtube}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full h-14 bg-red-600 rounded-2xl flex items-center justify-center gap-2 text-white font-bold shadow-lg hover:bg-red-700 transition-all uppercase tracking-widest text-xs"
-            >
-               <Play size={18} fill="white" />
-               {t('search_youtube')}
-            </a>
+            
+            <div className="flex gap-4 overflow-x-auto pb-6 px-6 no-scrollbar">
+               {savedQuotes.map((quote) => (
+                 <div key={quote.id} className="min-w-[160px] h-[220px] relative rounded-[2.5rem] overflow-hidden shadow-lg border-2 border-brand-soft group shrink-0">
+                    <img src={quote.img} className="absolute inset-0 w-full h-full object-cover" alt="Saved" />
+                    <div className="absolute inset-0 p-5 flex flex-col justify-end gap-2 bg-gradient-to-t from-black/60 to-transparent">
+                       <p className="text-white text-[10px] font-medium italic line-clamp-3 leading-tight">"{t(quote.textKey)}"</p>
+                       <p className="text-white/50 text-[7px] font-black uppercase tracking-widest shrink-0">— {quote.author}</p>
+                    </div>
+                 </div>
+               ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-           <h2 className="text-2xl font-display font-bold italic text-brand-text-dark text-center">
-             {t('daily_reflection')}
-           </h2>
-           <div className={`p-8 rounded-[2.5rem] border shadow-sm space-y-6 ${isCompleted ? 'bg-green-50' : content.reflection.color}`}>
-              <div className="flex items-center gap-3">
-                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white shadow-sm text-brand-tan">
-                    <content.reflection.icon size={24} />
-                 </div>
-                 <div>
-                    <h3 className="font-bold text-brand-text-dark">{t(content.reflection.titleKey)}</h3>
-                    <p className="text-[10px] text-brand-text/30 font-black uppercase tracking-widest">{isCompleted ? 'DONE' : 'ACTIVE'}</p>
-                 </div>
-              </div>
-              <p className="text-brand-text-dark/80 font-medium leading-relaxed italic text-lg opacity-80">
-                " {t(content.reflection.textKey)} "
-              </p>
-              <button 
-                onClick={() => setIsCompleted(!isCompleted)}
-                className="w-full h-14 rounded-2xl bg-brand-tan text-white font-black uppercase tracking-widest text-[10px] shadow-lg"
+        {/* Main Masonry Grid */}
+        <div className="columns-2 gap-4 space-y-4 px-4">
+          {quotes.map((quote) => {
+            const isLiked = likedIds.includes(quote.id);
+            const isSaved = savedIds.includes(quote.id);
+            
+            return (
+              <div 
+                key={quote.id} 
+                className="relative break-inside-avoid mb-4 group rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 bg-white/5 backdrop-blur-sm"
               >
-                {t('mark_complete')}
-              </button>
-           </div>
+                <img 
+                  src={quote.img} 
+                  alt={quote.author} 
+                  className={`w-full ${quote.height} object-cover transition-transform duration-700 group-hover:scale-110`} 
+                />
+                
+                <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/80 flex flex-col justify-end p-6">
+                  <div className="space-y-4">
+                    <p className="text-white text-lg font-display font-extrabold italic leading-tight drop-shadow-lg">
+                      "{t(quote.textKey)}"
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/60 text-[8px] font-black uppercase tracking-widest">— {quote.author}</span>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); toggleLike(quote.id); }}
+                          className={`p-2 backdrop-blur-md rounded-full transition-all active:scale-90 ${isLiked ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/40'}`}
+                        >
+                          <Heart size={14} fill={isLiked ? "currentColor" : "none"} />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); openShare(quote); }}
+                          className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all active:scale-90"
+                        >
+                          <Share2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Ribbon */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); toggleSave(quote.id); }}
+                    className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all shadow-lg ${isSaved ? 'bg-brand-tan text-white' : 'bg-white text-brand-tan hover:scale-105'}`}
+                  >
+                    {isSaved ? 'Saved' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
+
+      {/* Share Modal */}
+      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+        <DialogContent className="sm:max-w-md rounded-[3rem] border-none glass-strong shadow-2xl p-8">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-display font-bold italic text-brand-text-dark text-center mb-4">Spread the Wisdom</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-8">
+            {/* Direct Link Section */}
+            <div className="space-y-3">
+               <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-[0.2em] ml-2">Quick Link</p>
+               <div className="flex items-center gap-2 p-4 bg-brand-soft rounded-3xl border border-brand-tan/10">
+                 <LinkIcon size={18} className="text-brand-tan shrink-0" />
+                 <input 
+                   readOnly 
+                   value={`https://lumora.app/insight/${selectedQuote?.id}`}
+                   className="flex-1 bg-transparent text-[11px] font-medium text-brand-text-dark outline-none truncate"
+                 />
+                 <button 
+                   onClick={() => copyToClipboard(`https://lumora.app/insight/${selectedQuote?.id}`)}
+                   className="p-2 hover:bg-brand-tan/10 rounded-xl transition-all text-brand-tan"
+                 >
+                   {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
+                 </button>
+               </div>
+            </div>
+
+            {/* Internal Circles */}
+            <div className="space-y-3">
+               <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-[0.2em] ml-2">App Community</p>
+               <button 
+                 onClick={shareInternal}
+                 className="w-full flex items-center justify-between p-5 bg-white rounded-[2rem] border border-brand-tan/5 shadow-sm hover:shadow-md transition-all group"
+               >
+                 <div className="flex items-center gap-4">
+                    <div className="p-3 bg-brand-tan/10 rounded-2xl text-brand-tan group-hover:bg-brand-tan transition-all">
+                       <MessageCircle size={20} className="group-hover:text-white" />
+                    </div>
+                    <span className="font-bold text-sm text-brand-text-dark">Share with Circles</span>
+                 </div>
+                 <Send size={16} className="text-brand-text/20 group-hover:translate-x-1 transition-all" />
+               </button>
+            </div>
+
+            {/* External Apps */}
+            <div className="space-y-4">
+               <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-[0.2em] ml-2">Social Channels</p>
+               <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { name: 'WhatsApp', icon: MessageCircle, color: 'text-green-500', bg: 'bg-green-50' },
+                    { name: 'Instagram', icon: Instagram, color: 'text-pink-500', bg: 'bg-pink-50' },
+                    { name: 'Twitter', icon: Twitter, color: 'text-blue-500', bg: 'bg-blue-50' },
+                  ].map((app) => (
+                    <button 
+                      key={app.name}
+                      onClick={() => shareSocial(app.name)}
+                      className="flex flex-col items-center gap-3 p-5 rounded-[2rem] bg-white border border-brand-tan/5 hover:bg-brand-soft transition-all group"
+                    >
+                      <div className={`p-4 ${app.bg} ${app.color} rounded-2xl group-hover:scale-110 transition-transform shadow-sm`}>
+                        <app.icon size={24} />
+                      </div>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-brand-text-dark/40">{app.name}</span>
+                    </button>
+                  ))}
+               </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

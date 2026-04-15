@@ -12,6 +12,7 @@ import LanguageSelection from "./pages/LanguageSelection.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import WelcomePage from "./pages/WelcomePage.tsx";
 import MoodSelection from "./pages/MoodSelection.tsx";
+import GuardianInfo from "./pages/GuardianInfo.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/welcome" element={<WelcomePage />} />
+                <Route path="/guardian-info" element={<GuardianInfo />} />
                 <Route path="/mood-selection" element={<MoodSelection />} />
                 <Route path="/home" element={<Index />} />
                 <Route path="*" element={<NotFound />} />

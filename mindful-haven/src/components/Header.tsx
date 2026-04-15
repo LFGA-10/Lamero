@@ -1,8 +1,12 @@
-import { Leaf, Smile, ChevronRight } from "lucide-react";
+import { Leaf, Smile, ChevronRight, User } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+interface HeaderProps {
+  onTabChange?: (tab: any) => void;
+}
+
+const Header = ({ onTabChange }: HeaderProps) => {
   const { t, selectedMood } = useLanguage();
   const navigate = useNavigate();
 
@@ -17,7 +21,7 @@ const Header = () => {
          </h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <button 
           onClick={() => navigate("/mood-selection")}
           className="flex items-center gap-2 bg-[#f4f7fe] dark:bg-white/5 border border-brand-tan/20 rounded-full px-4 py-2 hover:bg-brand-tan/5 transition-all shadow-sm active:scale-95"
@@ -31,6 +35,14 @@ const Header = () => {
             {selectedMood ? t(selectedMood.label) : t('current_mood')}
           </span>
           <ChevronRight size={14} className="opacity-40" />
+        </button>
+
+        <button 
+          onClick={() => onTabChange?.("profile")}
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-[#f4f7fe] border border-brand-tan/20 text-[#ae8159] hover:bg-brand-tan/5 transition-all active:scale-90"
+          aria-label="Profile"
+        >
+          <User size={20} />
         </button>
       </div>
     </header>

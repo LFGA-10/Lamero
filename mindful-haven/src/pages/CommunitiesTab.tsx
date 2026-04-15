@@ -1,199 +1,206 @@
 import { useState, useEffect } from "react";
-import { Users, MessageCircle, Heart, Shield, Flower2, Sun, Send, ThumbsUp, Activity, User as UserIcon } from "lucide-react";
+import { MessageCircle, Heart, Share2, User as UserIcon, Shield, Send, MoreVertical, X, Globe } from "lucide-react";
 import DynamicBackground from "@/components/DynamicBackground";
 import { useLanguage } from "@/context/LanguageContext";
-import { apiRequest } from "@/lib/api-client";
 import { toast } from "sonner";
 
-interface SharedExperience {
-  _id: string;
+interface Post {
+  id: string;
   authorName: string;
   text: string;
-  group: string;
   likes: number;
-  likedBy: string[];
+  isLiked: boolean;
   time: string;
+  isAnonymous: boolean;
 }
+
+const STORAGE_KEY = "lumora_circles_posts";
 
 const CommunitiesTab = () => {
   const { t, userName } = useLanguage();
-  const [posts, setPosts] = useState<SharedExperience[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [newPost, setNewPost] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(true);
 
-  const groups = [
-    { icon: Activity, titleKey: "group_1" },
-    { icon: Shield, titleKey: "group_2" },
-    { icon: Flower2, titleKey: "group_3" },
-    { icon: Sun, titleKey: "group_4" },
-    { icon: Users, titleKey: "group_5" },
-    { icon: MessageCircle, titleKey: "group_6" },
-  ];
-
+  // Initialize and load from storage
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const data = await apiRequest("/posts");
-        setPosts(data);
-      } catch (err) {
-        toast.error("Cloud connection failed. Using local resonance.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    } else {
+      // Default initial posts
+      const defaults: Post[] = [
+        { 
+          id: "1", 
+          authorName: "Zen Explorer", 
+          text: "Just completed a 20-minute box breathing session. Feeling completely centered for the first time today. Gratitude to this community.", 
+          likes: 24, 
+          isLiked: false, 
+          time: "2h ago", 
+          isAnonymous: false 
+        },
+        { 
+          id: "2", 
+          authorName: "Anonymous Soul", 
+          text: "To anyone struggling today: your presence matters more than your productivity. Breathe and be gentle with yourself.", 
+          likes: 56, 
+          isLiked: true, 
+          time: "5h ago", 
+          isAnonymous: true 
+        }
+      ];
+      setPosts(defaults);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+    }
   }, []);
 
-  const [newPost, setNewPost] = useState("");
-  const [selectedGroupKey, setSelectedGroupKey] = useState("group_1");
-  const [anonymous, setAnonymous] = useState(true);
-
-  const handleSubmit = async () => {
-    const trimmed = newPost.trim();
-    if (!trimmed || trimmed.length > 500) return;
-
-    try {
-      const post = await apiRequest("/posts", {
-        method: "POST",
-        body: JSON.stringify({
-          text: trimmed,
-          group: selectedGroupKey,
-          isAnonymous: anonymous
-        })
-      });
-      setPosts([post, ...posts]);
-      setNewPost("");
-      toast.success("Experience shared with the sanctuary");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to share experience");
-    }
+  const saveToStorage = (updatedPosts: Post[]) => {
+    setPosts(updatedPosts);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPosts));
   };
 
-  const toggleLike = async (id: string) => {
-     try {
-       const updatedPost = await apiRequest(`/posts/${id}/like`, { method: "POST" });
-       setPosts(posts.map((p) => (p._id === id ? updatedPost : p)));
-     } catch (err: any) {
-       toast.error("Could not reach global resonance");
-     }
+  const handleCreatePost = () => {
+    const trimmed = newPost.trim();
+    if (!trimmed) return;
+
+    const post: Post = {
+      id: Date.now().toString(),
+      authorName: isAnonymous ? "Anonymous Soul" : (userName || "User"),
+      text: trimmed,
+      likes: 0,
+      isLiked: false,
+      time: "Just now",
+      isAnonymous: isAnonymous
+    };
+
+    const updated = [post, ...posts];
+    saveToStorage(updated);
+    setNewPost("");
+    toast.success("Experience shared within the Circle");
+  };
+
+  const toggleLike = (id: string) => {
+    const updated = posts.map(p => {
+      if (p.id === id) {
+        return {
+          ...p,
+          likes: p.isLiked ? p.likes - 1 : p.likes + 1,
+          isLiked: !p.isLiked
+        };
+      }
+      return p;
+    });
+    saveToStorage(updated);
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10 relative min-h-screen">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-32 relative min-h-screen">
       <DynamicBackground />
-      <div className="relative z-10 space-y-8">
-        <div className="flex flex-col items-center gap-2">
-           <div className="p-4 bg-brand-soft rounded-[2.5rem] shadow-sm text-brand-tan">
-              <MessageCircle size={48} strokeWidth={1.5} />
+      
+      <div className="relative z-10 space-y-10 px-4">
+        {/* Header Section */}
+        <div className="flex flex-col items-center gap-3 pt-4">
+           <div className="p-4 bg-brand-soft rounded-[2.5rem] shadow-sm text-brand-tan border border-brand-tan/10">
+              <Globe size={40} className="animate-pulse-soft" />
            </div>
-           <h2 className="text-4xl font-display font-bold italic text-brand-text-dark text-center">{t('circles')}</h2>
-           <p className="text-brand-text/40 font-black uppercase tracking-[0.2em] text-[10px]">{t('circles_desc')}</p>
+           <div className="text-center">
+              <h1 className="text-4xl font-display font-bold italic text-brand-text-dark">{t('circles')}</h1>
+              <p className="text-brand-text/40 font-black uppercase tracking-[0.3em] text-[10px] mt-1">Universal Resonance</p>
+           </div>
         </div>
 
-        {/* Group chips */}
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide px-2">
-          {groups.map((g) => {
-            const Icon = g.icon;
-            return (
-              <button
-                key={g.titleKey}
-                onClick={() => setSelectedGroupKey(g.titleKey)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shadow-sm ${
-                  selectedGroupKey === g.titleKey
-                    ? "bg-brand-tan text-white scale-105"
-                    : "bg-brand-soft text-brand-text-dark hover:bg-brand-tan/10"
-                }`}
+        {/* Posting Interface */}
+        <div className="p-8 rounded-[3.5rem] bg-white border border-brand-tan/10 shadow-2xl space-y-6">
+           <div className="flex items-center gap-3 ml-2">
+              <div className="w-10 h-10 rounded-2xl bg-brand-tan/10 flex items-center justify-center text-brand-tan">
+                 {isAnonymous ? <Shield size={18} /> : <UserIcon size={18} />}
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text-dark/40">
+                {isAnonymous ? "Posting Anonymously" : `Sharing as ${userName}`}
+              </p>
+           </div>
+
+           <textarea
+             value={newPost}
+             onChange={(e) => setNewPost(e.target.value.slice(0, 500))}
+             placeholder="What wisdom would you like to share today?"
+             className="w-full bg-brand-soft/50 rounded-[2.5rem] p-8 text-lg font-medium italic text-brand-text-dark placeholder:text-brand-text/20 resize-none focus:outline-none focus:ring-4 focus:ring-brand-tan/5 min-h-[160px] transition-all border-none leading-relaxed"
+           />
+
+           <div className="flex items-center gap-3">
+              {/* Share Now Button - Now the only action */}
+              <button 
+                onClick={handleCreatePost}
+                disabled={!newPost.trim()}
+                className="w-full h-14 rounded-full bg-brand-tan text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-lg hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none"
               >
-                <Icon size={12} strokeWidth={2.5} />
-                {t(g.titleKey)}
+                SHARE NOW
               </button>
-            );
-          })}
+           </div>
         </div>
 
-        {/* Share experience */}
-        <div className="p-8 rounded-[2.5rem] bg-brand-soft border border-brand-tan/10 shadow-sm animate-fade-in relative overflow-hidden group">
-          <p className="text-xs font-black text-brand-text-dark mb-4 uppercase tracking-[0.2em] opacity-40 px-1">{t('share_exp')}</p>
-          <textarea
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value.slice(0, 500))}
-            placeholder={anonymous ? t('sharing_anon') : `${t('sharing_as')} ${userName}...`}
-            className="w-full bg-white/50 backdrop-blur-sm rounded-3xl p-6 text-sm text-brand-text-dark placeholder:text-brand-text/30 resize-none focus:outline-none focus:ring-2 focus:ring-brand-tan/10 min-h-[140px] transition-all border-none font-medium leading-relaxed"
-            rows={3}
-          />
-          <div className="flex items-center justify-between mt-6">
-            <button
-              onClick={() => setAnonymous(!anonymous)}
-              className={`text-[10px] px-6 py-2.5 rounded-full font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
-                anonymous ? "bg-brand-tan text-white" : "bg-white text-brand-text-dark"
-              }`}
-            >
-              <div className={`w-2 h-2 rounded-full ${anonymous ? 'bg-white' : 'bg-brand-tan'} animate-pulse`} />
-              {anonymous ? t('post_anon') : `${t('post_as_user')} ${userName}`}
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={!newPost.trim()}
-              className="flex items-center gap-2 px-10 py-3 rounded-full bg-brand-tan text-white text-xs font-black uppercase tracking-[0.2em] disabled:opacity-30 transition-all hover:scale-105 active:scale-95 shadow-lg"
-            >
-              {t('share_now')}
-            </button>
-          </div>
-        </div>
-
-        {/* Posts feed */}
+        {/* Feed Section */}
         <div className="space-y-6">
-          {loading ? (
-            <div className="flex flex-col items-center py-12 gap-4 animate-pulse">
-               <div className="w-12 h-12 bg-brand-tan/20 rounded-full" />
-               <p className="text-[10px] font-black uppercase tracking-widest text-brand-text/30">Syncing Sanctuary Resonance...</p>
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="flex flex-col items-center py-12 gap-4 text-center">
-               <div className="p-4 bg-brand-soft rounded-full text-brand-tan/40">
-                  <Heart size={32} />
-               </div>
-               <p className="text-sm font-medium text-brand-text-dark/40 max-w-[200px]">The sanctuary is quiet. Be the first to share your light.</p>
-            </div>
-          ) : (
-            posts.map((post, i) => {
-              const liked = post.likedBy?.includes(userName) || false; // Mocking current user check for now
-              return (
-                <div
-                  key={post._id}
-                  className="p-8 rounded-[2.5rem] bg-white/80 backdrop-blur-sm border border-brand-tan/5 shadow-sm animate-fade-in hover:shadow-md transition-all"
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                  <div className="flex items-center justify-between mb-4">
+           {posts.length === 0 ? (
+             <div className="py-20 flex flex-col items-center gap-4 animate-pulse">
+                <div className="w-12 h-12 bg-brand-tan/10 rounded-full" />
+                <p className="text-[9px] font-black uppercase tracking-widest text-brand-text/20">Awaiting resonance...</p>
+             </div>
+           ) : (
+             posts.map((post, i) => (
+               <article 
+                 key={post.id}
+                 className="p-8 rounded-[3rem] bg-white/80 backdrop-blur-md border border-brand-tan/5 shadow-sm hover:shadow-lg transition-all animate-in fade-in zoom-in-95"
+                 style={{ animationDelay: `${i * 0.1}s` }}
+               >
+                 <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-brand-tan/10 flex items-center justify-center text-brand-tan shadow-inner">
-                        <UserIcon size={20} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-brand-text-dark">{post.authorName}</p>
-                        <p className="text-[10px] font-black text-brand-text/30 uppercase tracking-[0.2em]">{t(post.group)}</p>
-                      </div>
+                       <div className={`w-12 h-12 rounded-3xl flex items-center justify-center shadow-inner ${post.isAnonymous ? "bg-slate-100 text-slate-400" : "bg-brand-tan/10 text-brand-tan"}`}>
+                          {post.isAnonymous ? <Shield size={20} /> : <UserIcon size={20} />}
+                       </div>
+                       <div>
+                          <p className="text-sm font-bold text-brand-text-dark">{post.authorName}</p>
+                          <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-[0.2em]">{post.time}</p>
+                       </div>
                     </div>
-                  </div>
-                  <p className="text-lg text-brand-text-dark leading-relaxed mb-6 italic font-medium pr-4">" {post.text} "</p>
-                  <div className="flex items-center gap-8">
-                    <button
-                      onClick={() => toggleLike(post._id)}
-                      className={`flex items-center gap-2 text-[10px] transition-all font-black uppercase tracking-[0.2em] ${
-                        liked ? "text-brand-tan scale-110" : "text-brand-text/30 hover:text-brand-tan"
+                    <button className="p-2 text-brand-text/20 hover:text-brand-tan">
+                       <MoreVertical size={20} />
+                    </button>
+                 </div>
+
+                 <p className="text-xl md:text-2xl font-display font-bold italic text-brand-text-dark leading-relaxed mb-8 pr-2">
+                   "{post.text}"
+                 </p>
+
+                 <div className="flex items-center gap-8 pt-6 border-t border-brand-tan/5">
+                    <button 
+                      onClick={() => toggleLike(post.id)}
+                      className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                        post.isLiked ? "text-red-500 scale-105" : "text-brand-text/30 hover:text-brand-tan"
                       }`}
                     >
-                      <ThumbsUp size={16} fill={liked ? "currentColor" : "none"} />
-                      {post.likes}
+                       <Heart size={18} fill={post.isLiked ? "currentColor" : "none"} />
+                       {post.likes}
                     </button>
-                    <button className="text-[10px] text-brand-text/30 hover:text-brand-tan font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                      <MessageCircle size={16} />
-                      {t('reply')}
+                    
+                    <button 
+                      onClick={() => toast.success("Opening conversation...")}
+                      className="text-[10px] font-black uppercase tracking-widest text-brand-text/30 hover:text-brand-tan flex items-center gap-2 transition-all"
+                    >
+                       <MessageCircle size={18} />
+                       Resonate
                     </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
+
+                    <button 
+                      onClick={() => toast.success("Post link copied!")}
+                      className="text-[10px] font-black uppercase tracking-widest text-brand-text/30 hover:text-brand-tan flex items-center gap-2 transition-all ml-auto"
+                    >
+                       <Share2 size={18} />
+                    </button>
+                 </div>
+               </article>
+             ))
+           )}
         </div>
       </div>
     </div>

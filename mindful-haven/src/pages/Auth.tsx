@@ -52,7 +52,7 @@ const Auth = () => {
       login(data, data.token);
       setUserName(data.username);
       toast.success(isLogin ? "Welcome back to the sanctuary" : "Your journey begins now");
-      navigate("/welcome");
+      navigate(isLogin ? "/welcome" : "/guardian-info");
     } catch (err: any) {
       toast.error(err.message || "Failed to resonate with sanctuary server");
     } finally {

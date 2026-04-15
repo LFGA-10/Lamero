@@ -1,4 +1,4 @@
-import { Home, Leaf, MessageCircle, BookOpen, Settings, Map } from "lucide-react";
+import { Home, Leaf, MessageCircle, BookOpen, User, Compass } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 type TabId = "home" | "activities" | "advice" | "explore" | "communities" | "profile" | "settings";
@@ -14,10 +14,9 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
   const navItems: { id: TabId; label: string; icon: any }[] = [
     { id: "home", label: t('home'), icon: Home },
     { id: "activities", label: t('play'), icon: Leaf },
+    { id: "explore", label: t('explore'), icon: Compass },
     { id: "communities", label: t('circles'), icon: MessageCircle },
     { id: "advice", label: t('library'), icon: BookOpen },
-    { id: "profile", label: t('journey'), icon: Map },
-    { id: "settings", label: t('settings'), icon: Settings },
   ];
 
   return (
