@@ -105,7 +105,7 @@ const ActivitiesTab = () => {
           {activities.map((activity) => (
             <div 
               key={activity.id} 
-              className={`bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 shadow-sm transition-all border border-brand-tan/5 group relative overflow-hidden ${playingId === activity.id ? 'ring-2 ring-brand-tan border-transparent shadow-xl' : 'hover:shadow-lg'}`}
+              className={`bg-card/80 backdrop-blur-md rounded-[2.5rem] p-8 shadow-sm transition-all border border-brand-tan/5 group relative overflow-hidden ${playingId === activity.id ? 'ring-2 ring-brand-tan border-transparent shadow-xl' : 'hover:shadow-lg'}`}
             >
               {activity.isTopPick && (
                 <div className="absolute top-6 right-8 flex items-center gap-2 bg-brand-tan text-white text-[8px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-lg z-20">
@@ -162,7 +162,7 @@ const ActivitiesTab = () => {
       {activeActivity && (
         <div className="fixed bottom-28 left-4 right-4 bg-brand-text-dark text-white rounded-[2rem] p-4 flex items-center justify-between shadow-2xl animate-in slide-in-from-bottom-10 duration-700 z-50">
           <div className="flex items-center gap-4">
-             <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center animate-spin-slow">
+             <div className="w-12 h-12 bg-card/5 rounded-2xl flex items-center justify-center animate-spin-slow">
                 <Music size={20} />
              </div>
              <div>

@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { TrendingUp, Award, Zap, Heart, Star, ShieldCheck, ChevronRight, Settings, Bell, Shield, Lock, Moon, Globe, LogOut, Sparkles, User, BarChart3 } from "lucide-react";
-import DynamicBackground from "@/components/DynamicBackground";
-import { useLanguage } from "@/context/LanguageContext";
-import { Link, useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import TwoFactorSetup from "@/components/TwoFactorSetup";
+import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
 
 interface ProfileTabProps {
   onTabChange?: (tab: any) => void;
@@ -13,12 +14,21 @@ interface ProfileTabProps {
 
 const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
   const { t, userName, language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [activeSubTab, setActiveSubTab] = useState<"journey" | "settings">("journey");
+
+  const [isLangOpen, setIsLangOpen] = useState(false);
 
   const handleLogout = () => {
     toast.success("Safely logged out from your sanctuary");
     navigate("/");
+  };
+
+  const handleLanguageChange = (lang: any) => {
+    setLanguage(lang);
+    setIsLangOpen(false);
+    toast.success(`${lang} applied successfully`);
   };
 
   return (
@@ -26,7 +36,7 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
       <DynamicBackground />
       <div className="relative z-10 space-y-8 py-4 px-2">
         {/* Profile Header Section */}
-        <div className="bg-white/80 backdrop-blur-md rounded-[3rem] p-8 shadow-sm border border-brand-tan/10 mx-2 animate-in fade-in zoom-in-95 duration-700 relative group">
+        <div className="bg-card/80 backdrop-blur-md rounded-[3rem] p-8 shadow-sm border border-brand-tan/10 mx-2 animate-in fade-in zoom-in-95 duration-700 relative group">
           <div className="flex flex-col items-center gap-6">
             <div className="relative group">
               <div className="w-24 h-24 rounded-[2rem] bg-brand-tan/10 flex items-center justify-center text-brand-tan overflow-hidden relative">
@@ -53,11 +63,11 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
         </div>
 
         {/* Sub-tab Switcher */}
-        <div className="mx-2 bg-white/50 backdrop-blur-sm p-1.5 rounded-[2rem] flex border border-brand-tan/10 shadow-sm relative overflow-hidden">
+        <div className="mx-2 bg-card/50 backdrop-blur-sm p-1.5 rounded-[2rem] flex border border-brand-tan/10 shadow-sm relative overflow-hidden">
            <button 
              onClick={() => setActiveSubTab("journey")}
              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all duration-500 relative z-10 ${
-               activeSubTab === "journey" ? "text-white" : "text-brand-text/40"
+               activeSubTab === "journey" ? "text-white" : "text-brand-text/40 dark:text-brand-soft/40"
              }`}
            >
              <BarChart3 size={14} />
@@ -82,9 +92,9 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
         {activeSubTab === "journey" ? (
           /* Journey/Stats View */
           <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
-            <div className="mx-2 bg-white/90 backdrop-blur-md rounded-[3.5rem] p-10 space-y-10 shadow-xl border border-brand-tan/10 relative overflow-hidden group">
+            <div className="mx-2 bg-card/90 backdrop-blur-md rounded-[3.5rem] p-10 space-y-10 shadow-xl border border-brand-tan/10 relative overflow-hidden group">
                <div className="flex justify-between items-center mb-2 px-2">
-                  <h3 className="text-xl font-display font-bold italic text-brand-text-dark">{t('emotional_resonance')}</h3>
+                  <h3 className="text-xl font-display font-bold italic text-brand-text-dark dark:text-brand-soft">{t('emotional_resonance')}</h3>
                </div>
                
                <div className="h-56 px-2 relative group-hover:scale-[1.02] transition-transform duration-700">
@@ -141,15 +151,15 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
                   {/* Days labels */}
                   <div className="flex justify-between mt-8">
                      {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => (
-                        <span key={day} className="text-[9px] font-black text-brand-text/30 uppercase tracking-tighter">{t(day)}</span>
+                        <span key={day} className="text-[9px] font-black text-brand-text/30 dark:text-brand-soft/20 uppercase tracking-tighter">{t(day)}</span>
                      ))}
                   </div>
                </div>
                
                <div className="pt-8 border-t border-brand-tan/5 grid grid-cols-2 gap-8 px-2">
                   <div className="space-y-1">
-                     <p className="text-[10px] font-black text-brand-text/30 uppercase tracking-[0.2em]">{t('current_peak')}</p>
-                     <p className="text-xl font-display font-bold text-brand-text-dark italic">80% {t('balance')}</p>
+                     <p className="text-[10px] font-black text-brand-text/30 dark:text-brand-soft/30 uppercase tracking-[0.2em]">{t('current_peak')}</p>
+                     <p className="text-xl font-display font-bold text-brand-text-dark dark:text-brand-soft italic">80% {t('balance')}</p>
                   </div>
                   <div className="space-y-1 text-right">
                      <p className="text-[10px] font-black text-brand-text/30 uppercase tracking-[0.2em]">{t('status')}</p>
@@ -159,21 +169,21 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 px-2">
-               <div className="bg-[#fff9db]/50 backdrop-blur-sm p-8 rounded-[3rem] border border-brand-tan/10 space-y-4 shadow-sm">
-                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-amber-500 shadow-inner">
+               <div className="bg-[#fff9db]/10 dark:bg-amber-500/10 backdrop-blur-sm p-8 rounded-[3rem] border border-brand-tan/10 space-y-4 shadow-sm">
+                  <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-amber-500 shadow-inner">
                      <Star size={24} fill="currentColor" />
                   </div>
                   <div>
-                     <p className="text-2xl font-display font-bold italic text-brand-text-dark">12 {t('days')}</p>
+                     <p className="text-2xl font-display font-bold italic text-brand-text-dark dark:text-brand-soft">12 {t('days')}</p>
                      <p className="text-[10px] font-black text-brand-text/40 uppercase tracking-widest">{t('mindful_streak')}</p>
                   </div>
                </div>
-               <div className="bg-[#f8f0fc]/50 backdrop-blur-sm p-8 rounded-[3rem] border border-brand-tan/10 space-y-4 shadow-sm">
-                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-purple-500 shadow-inner">
+               <div className="bg-[#f8f0fc]/10 dark:bg-purple-500/10 backdrop-blur-sm p-8 rounded-[3rem] border border-brand-tan/10 space-y-4 shadow-sm">
+                  <div className="w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-purple-500 shadow-inner">
                      <Award size={24} />
                   </div>
                   <div>
-                     <p className="text-2xl font-display font-bold italic text-brand-text-dark">{t('rank')} 4</p>
+                     <p className="text-2xl font-display font-bold italic text-brand-text-dark dark:text-brand-soft">{t('rank')} 4</p>
                      <p className="text-[10px] font-black text-brand-text/40 uppercase tracking-widest">{t('calm_walker')}</p>
                   </div>
                </div>
@@ -184,14 +194,44 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
           <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="space-y-10 px-2">
               <Section title={t('lang_theme')}>
-                <Link to="/">
-                  <SettingItem 
-                    icon={Globe} 
-                    label={t('app_lang')} 
-                    subLabel={language} 
-                  />
-                </Link>
-                <SettingItem icon={Moon} label={t('dark_mode')} isToggle />
+                <Dialog open={isLangOpen} onOpenChange={setIsLangOpen}>
+                  <DialogTrigger asChild>
+                    <button className="w-full">
+                      <SettingItem 
+                        icon={Globe} 
+                        label={t('app_lang')} 
+                        subLabel={language} 
+                      />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md rounded-[3rem] border-none glass-strong shadow-2xl p-8">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-display font-bold text-center mb-6">{t('select_language')}</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid grid-cols-1 gap-2">
+                      {['Kinyarwanda', 'French', 'English', 'Swahili', 'Portuguese', 'Spanish', 'Russian'].map((lang) => (
+                        <button
+                          key={lang}
+                          onClick={() => handleLanguageChange(lang as any)}
+                          className={`w-full p-4 rounded-2xl flex justify-between items-center transition-all ${
+                            language === lang ? "bg-brand-tan text-white" : "bg-brand-tan/5 text-brand-text-dark hover:bg-brand-tan/10"
+                          }`}
+                        >
+                          <span className="font-bold">{lang}</span>
+                          {language === lang && <Zap size={14} fill="white" />}
+                        </button>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <SettingItem 
+                  icon={Moon} 
+                  label={t('dark_mode')} 
+                  isToggle 
+                  isActive={theme === 'dark'}
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                />
               </Section>
 
               <Section title={t('safety_privacy')}>
@@ -250,27 +290,30 @@ const ProfileTab = ({ onTabChange }: ProfileTabProps) => {
 
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <div className="space-y-4">
-    <h3 className="text-[10px] font-black text-brand-text/30 uppercase tracking-[0.3em] ml-6">{title}</h3>
-    <div className="bg-white/80 backdrop-blur-sm rounded-[3rem] p-3 space-y-1 shadow-sm overflow-hidden border border-brand-tan/5">
+    <h3 className="text-[10px] font-black text-brand-text/30 dark:text-brand-soft/20 uppercase tracking-[0.3em] ml-6">{title}</h3>
+    <div className="bg-card/80 backdrop-blur-sm rounded-[3rem] p-3 space-y-1 shadow-sm overflow-hidden border border-brand-tan/5">
       {children}
     </div>
   </div>
 );
 
-const SettingItem = ({ icon: Icon, label, subLabel, isToggle }: { icon: any, label: string, subLabel?: string, isToggle?: boolean }) => (
-  <div className="w-full p-5 rounded-[2rem] flex items-center justify-between hover:bg-brand-tan/5 transition-all group cursor-pointer active:scale-[0.98]">
+const SettingItem = ({ icon: Icon, label, subLabel, isToggle, isActive, onClick, className }: { icon: any, label: string, subLabel?: string, isToggle?: boolean, isActive?: boolean, onClick?: () => void, className?: string }) => (
+  <div 
+    onClick={onClick}
+    className={`w-full p-5 rounded-[2rem] flex items-center justify-between hover:bg-brand-tan/5 transition-all group cursor-pointer active:scale-[0.98] ${className}`}
+  >
     <div className="flex items-center gap-4">
-      <div className="p-3 bg-brand-soft rounded-2xl text-brand-tan group-hover:bg-brand-tan group-hover:text-white transition-all shadow-sm shrink-0">
+      <div className="p-3 bg-brand-soft dark:bg-brand-text-dark/20 rounded-2xl text-brand-tan group-hover:bg-brand-tan group-hover:text-white transition-all shadow-sm shrink-0">
         <Icon size={20} strokeWidth={2} />
       </div>
       <div className="text-left">
-        <p className="text-xs font-bold text-brand-text-dark">{label}</p>
+        <p className="text-xs font-bold text-brand-text-dark dark:text-brand-soft/80">{label}</p>
         {subLabel && <p className="text-[8px] font-bold text-brand-tan uppercase tracking-widest mt-0.5">{subLabel}</p>}
       </div>
     </div>
     {isToggle ? (
-       <div className="w-10 h-6 bg-brand-tan/10 rounded-full relative p-1 transition-colors group-hover:bg-brand-tan/20">
-          <div className="w-4 h-4 bg-brand-tan rounded-full shadow-sm" />
+       <div className={`w-10 h-6 rounded-full relative p-1 transition-all duration-300 ${isActive ? "bg-brand-tan" : "bg-brand-tan/10"}`}>
+          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${isActive ? "translate-x-4" : "translate-x-0"}`} />
        </div>
     ) : (
        <ChevronRight size={16} className="text-brand-text/20 group-hover:translate-x-1 transition-all" />

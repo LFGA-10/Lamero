@@ -114,7 +114,7 @@ const Auth = () => {
                     placeholder="000000"
                     value={twoFactorToken}
                     onChange={(e) => setTwoFactorToken(e.target.value)}
-                    className="h-16 bg-white/50 text-center text-2xl font-bold tracking-[0.5em] rounded-3xl border-none ring-1 ring-brand-tan/20"
+                    className="h-16 bg-background/50 text-center text-2xl font-bold tracking-[0.5em] rounded-3xl border-none ring-1 ring-brand-tan/20"
                     maxLength={6}
                   />
                   <Button
@@ -159,7 +159,7 @@ const Auth = () => {
                       placeholder={t('user_placeholder')}
                       value={username}
                       onChange={(e) => setUsernameInput(e.target.value)}
-                      className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                      className="h-14 bg-background/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
                     />
                   </div>
                 )}
@@ -170,7 +170,7 @@ const Auth = () => {
                     placeholder={t('email_placeholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                    className="h-14 bg-background/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
                   />
                 </div>
                 <div className="relative">
@@ -180,7 +180,7 @@ const Auth = () => {
                     placeholder={t('pass_placeholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-14 bg-white/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
+                    className="h-14 bg-background/50 backdrop-blur-sm rounded-2xl pl-12 border-none ring-1 ring-brand-tan/5 focus:ring-brand-tan/20 transition-all font-medium text-brand-text-dark"
                   />
                 </div>
               </div>

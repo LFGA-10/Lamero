@@ -96,7 +96,7 @@ const ExploreTab = () => {
               className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shadow-sm shrink-0 border border-brand-tan/10 ${
                 active === cat
                   ? "bg-brand-tan text-white scale-105 shadow-brand-tan/20"
-                  : "bg-white/80 backdrop-blur-sm text-brand-text-dark hover:bg-brand-tan/5"
+                  : "bg-card/80 backdrop-blur-sm text-brand-text-dark dark:text-brand-soft/80 hover:bg-brand-tan/5"
               }`}
             >
               {cat}
@@ -124,20 +124,20 @@ const ExploreTab = () => {
               <div className="p-8 space-y-4">
                 <div className="flex justify-between items-start">
                    <div className="text-4xl group-hover:rotate-12 transition-transform duration-500">{w.emoji}</div>
-                   <button 
-                     onClick={(e) => toggleLike(e, w.id)}
-                     className={`p-4 rounded-2xl transition-all shadow-sm relative overflow-hidden ${
-                       likedIds.includes(w.id) ? "bg-red-500 text-white" : "bg-white/80 backdrop-blur-sm hover:bg-white text-brand-text/20"
-                     }`}
-                   >
+                    <button 
+                      onClick={(e) => toggleLike(e, w.id)}
+                      className={`p-4 rounded-2xl transition-all shadow-sm relative overflow-hidden ${
+                        likedIds.includes(w.id) ? "bg-red-500 text-white" : "bg-card/80 backdrop-blur-sm hover:bg-card text-brand-text/20"
+                      }`}
+                    >
                       <Heart size={20} fill={likedIds.includes(w.id) ? "currentColor" : "none"} />
                    </button>
                 </div>
-                <div className="space-y-1">
-                   <h3 className="text-2xl font-display font-extrabold text-brand-text-dark italic leading-tight">{w.title}</h3>
-                   <p className="text-brand-text/40 font-black text-[10px] uppercase tracking-[0.2em]">{w.author}</p>
-                </div>
-                <p className="text-brand-text/70 font-medium leading-relaxed italic text-sm line-clamp-2">" {w.excerpt} "</p>
+                 <div className="space-y-1">
+                    <h3 className="text-2xl font-display font-extrabold text-brand-text-dark dark:text-brand-soft italic leading-tight">{w.title}</h3>
+                    <p className="text-brand-text/40 font-black text-[10px] uppercase tracking-[0.2em]">{w.author}</p>
+                 </div>
+                 <p className="text-brand-text/70 dark:text-brand-soft/70 font-medium leading-relaxed italic text-sm line-clamp-2">" {w.excerpt} "</p>
                 
                 <div className="flex items-center gap-2 text-[10px] font-black text-brand-tan uppercase tracking-widest pt-2">
                    View Details <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -153,13 +153,13 @@ const ExploreTab = () => {
         <DialogContent className="sm:max-w-2xl rounded-[3.5rem] border-none glass-strong shadow-2xl p-0 overflow-hidden animate-in zoom-in-95 duration-500">
           {selectedItem && (
             <div className="flex flex-col h-full max-h-[90vh] overflow-y-auto no-scrollbar">
-               <div className="relative h-[400px] w-full shrink-0">
-                  <img src={selectedItem.imageUrl} className="w-full h-full object-cover" alt={selectedItem.title} />
-                  <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent" />
-                  <button 
-                    onClick={() => setSelectedItem(null)}
-                    className="absolute top-6 right-6 p-3 bg-white/20 backdrop-blur-md text-white rounded-2xl hover:bg-white/40 transition-all border border-white/20"
-                  >
+                <div className="relative h-[400px] w-full shrink-0">
+                   <img src={selectedItem.imageUrl} className="w-full h-full object-cover" alt={selectedItem.title} />
+                   <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent" />
+                   <button 
+                     onClick={() => setSelectedItem(null)}
+                     className="absolute top-6 right-6 p-3 bg-background/20 backdrop-blur-md text-white rounded-2xl hover:bg-background/40 transition-all border border-white/20"
+                   >
                     <X size={24} />
                   </button>
                   <div className="absolute bottom-8 left-10">
