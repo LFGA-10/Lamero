@@ -25,12 +25,19 @@ const limiter = rateLimit({
 app.use("/api/", limiter);
 
 // Database Connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/lumora";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/lumora";
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => console.log("🍃 Connected to Sanctuary Database (MongoDB)"))
-  .catch((err) => console.error("❌ Database connection error:", err));
+  .catch((err) => {
+    console.warn("⚠️  Local MongoDB not detected. Sanctuary is running in 'Memory/Mock Mode'.");
+    if (process.env.NODE_ENV === "production") {
+      console.error("❌ Critical: Database connection error in production!", err);
+    }
+  });
 
 // Routes
 app.use("/api", apiRoutes);
